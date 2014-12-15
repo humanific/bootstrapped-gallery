@@ -24,7 +24,7 @@ function bootstrapped_gallery_shortcode($atts) {
       $pids = explode(',', $atts['ids']);
      $ids = array();
      foreach( $pids as $id ) $ids[] = intval($id);
-      $wpq = new WP_Query( array(  'post__in' => $ids,'post_type' => 'attachment', 'post_status' => 'inherit' ) );
+      $wpq = new WP_Query( array(  'post__in' => $ids,'post_type' => 'attachment', 'post_status' => 'inherit','posts_per_page' => -1,'orderby' => 'post__in' ) );
     $images = $wpq->posts;
    }else if(isset($atts['postid'])){
     $images = get_children( array('post_parent' => $atts['postid'], 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => 'ASC', 'orderby' => 'menu_order ID') );
