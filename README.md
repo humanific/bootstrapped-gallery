@@ -8,7 +8,7 @@ By [humanific](http://humanific.com)
 
 ## Quick start
 
-Copy the Folder in your Wordpress theme folder and enable it. 
+Copy the Folder in your Wordpress plugin folder and enable it. 
 
 ## Bugs and feature requests
 
