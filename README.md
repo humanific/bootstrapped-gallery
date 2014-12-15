@@ -1,4 +1,4 @@
-# [Bootstrapped Carousel Wordpress Plugin(http://bootstrapped.humanific.com)
+# [Bootstrapped Carousel Wordpress Plugin](http://bootstrapped.humanific.com)
 
 Bootstrap Carousel plugin for wordpress
 
