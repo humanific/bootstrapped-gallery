@@ -12,12 +12,17 @@ Version: 0.1
 Author URI: http://humanific.com
 */
 
+
+
+
 function bootstrapped_gallery_shortcode($atts) {
-   global $post;
-   wp_enqueue_style( 'blueimpgallery2', get_stylesheet_directory_uri().'/js/blueimp-gallery.min.css');
-   wp_enqueue_style( 'blueimpgallery', get_stylesheet_directory_uri().'/js/bootstrap-image-gallery.min.css');
-   wp_enqueue_script( 'blueimpgallery', get_stylesheet_directory_uri().'/js/jquery.blueimp-gallery.min.js' , false );
-   wp_enqueue_script( 'blueimpgallery', get_stylesheet_directory_uri().'/js/bootstrap-image-gallery.min.js' , false );
+   global $post, $bootstrapped_galleries_num;
+   if(!$bootstrapped_galleries_num) $bootstrapped_galleries_num = 0;
+   $bootstrapped_galleries_num++;
+   wp_enqueue_style( 'blueimpgallery2', plugins_url( '/blueimp-gallery.min.css' , __FILE__ ));
+   wp_enqueue_style( 'blueimpgallery', plugins_url( '/bootstrap-image-gallery.min.css', __FILE__ ));
+   wp_enqueue_script( 'blueimpgallery1', plugins_url( '/jquery.blueimp-gallery.min.js' , __FILE__ ),array('bootstrap'));
+   wp_enqueue_script( 'blueimpgallery', plugins_url( '/bootstrap-image-gallery.min.js' , __FILE__ ),array('blueimpgallery1'));
   
   
    if(isset($atts['ids'])){
@@ -31,22 +36,30 @@ function bootstrapped_gallery_shortcode($atts) {
    }else{
       $images = get_children( array('post_parent' => $post->ID, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => 'ASC', 'orderby' => 'menu_order ID') );
    }
+
+   $columns = !isset($atts['columns']) ? 6 : intval($atts['columns']);
+   if( $columns == 6) $span =  "col-xs-4 col-md-2";
+   if( $columns == 4) $span =  "col-xs-6 col-md-3";
+   if( $columns == 3) $span =  "col-xs-6 col-sm-4";
+   if( $columns == 2) $span =  "col-xs-6";
+   if( $columns == 1) $span =  "col-xs-12";
+
   ob_start();
   if ($images) :?>
-    <div class="gallery">
+    <div class="gallery" id="bootstrapped-gallery-<?php echo $bootstrapped_galleries_num; ?>">
     <div class="row">
       <?php foreach( $images as $k => $imagePost ): 
         $image_attributes = wp_get_attachment_image_src(  $imagePost->ID, 'thumbnail' ); 
         $large = wp_get_attachment_image_src(  $imagePost->ID, 'large' ); 
-        ?><div class="col-xs-6 col-md-3">
-        <a href="<?php echo $large[0]; ?>" class="thumbnail" data-gallery>
-        <img src="<?php echo $image_attributes[0]; ?>" />
+        ?><div class="<?php echo $span ;?>">
+        <a href="<?php echo $large[0]; ?>" data-toggle="tooltip" data-placement="top" class="thumbnail" data-gallery="bootstrapped-gallery-<?php echo $bootstrapped_galleries_num; ?>" title="<?php echo $imagePost->post_excerpt ?>" data-description="<?php echo $imagePost->post_content ?>">
+        <img src="<?php echo $image_attributes[0]; ?>" class="fullwidth"/>
         </a>
         </div>
       <?php endforeach ;?>
       </div>
     </div>
-    
+    <?php if($bootstrapped_galleries_num==1):?>
 <!-- The Bootstrap Image Gallery lightbox, should be a child element of the document body -->
 <div id="blueimp-gallery" class="blueimp-gallery">
     <!-- The container for the modal slides -->
@@ -84,11 +97,15 @@ function bootstrapped_gallery_shortcode($atts) {
 
 
 <script type="text/jscript">
- var borderless = true;
- jQuery('#blueimp-gallery').data('useBootstrapModal', !borderless);
- jQuery('#blueimp-gallery').toggleClass('blueimp-gallery-controls', borderless);
+
+ jQuery(function ($) {
+  //$('[data-toggle="tooltip"]').tooltip();
+  var borderless = true;
+  $('#blueimp-gallery').data('useBootstrapModal', !borderless);
+  $('#blueimp-gallery').toggleClass('blueimp-gallery-controls', borderless);
+})
 </script>
-    
+<?php endif ;?>
 <?php 
 add_action( 'wp_print_styles', 'add_gallery_styles', 100 );
 
