@@ -83,7 +83,7 @@ function bootstrapped_gallery_shortcode($atts) {
       event: event, 
       titleProperty: 'data-title',
       onslide: function (index, slide) {
-        $(this.container).find('.title').html($(this.list[index]).attr('data-title') +'<br><small>'+$(this.list[index]).attr('data-description')+'</small>');
+        $(this.container).find('.title').html($(this.list[index]).attr('data-title'));
         }
     });
     return false;
